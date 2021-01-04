@@ -21,9 +21,9 @@ pipeline {
         stage('Make Image') {
             environment {
                 PATH        = "/busybox:$PATH"
-                REGISTRY    = 'acravaxia.azurecr.io' // Configure your own registry
+                REGISTRY    = 'acravaxia.azurecr.io' 
                 REPOSITORY  = 'docker-build'
-                IMAGE       = 'master'
+                IMAGE       = 'test'
             }
             steps {
                 container(name: 'kaniko', shell: '/busybox/sh') {
@@ -41,7 +41,7 @@ pipeline {
             }
             steps {
                 container('helm') {
-                    sh "helm -n default upgrade --install --force docker-build --set image.tag=${VERSION} ${NAME} ./charts"
+                    sh "helm -n default upgrade --install --force docker-build --set image.tag=test ${NAME} ./charts"
                 }
             }
         }
