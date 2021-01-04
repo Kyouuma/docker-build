@@ -10,8 +10,9 @@ spec:
       image: gcr.io/kaniko-project/executor:debug
       imagePullPolicy: Always
       volumeMounts:
-      - name: kaniko-secret
+      - name: acr
         mountPath: /kaniko/.docker/
+        readOnly: true
       restartPolicy: Never
       resources:
         requests:
@@ -21,6 +22,9 @@ spec:
           cpu: "0.5"
           memory: "500Mi"
   volumes:
-  - name: kaniko-secret
-    secret:
-      name: kaniko-secret
+  - name: acr
+    projected:
+      sources:
+      - secret:
+          name: kaniko-secret
+
