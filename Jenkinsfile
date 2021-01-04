@@ -41,7 +41,7 @@ pipeline {
             }
             steps {
                 container('helm') {
-                    sh "helm -n default upgrade --install --force docker-build --set image.tag=test ${NAME} ./charts"
+                    sh "helm -n default upgrade --force docker-build --set image.tag=test ${NAME} ./charts"
                 }
             }
         }
