@@ -10,7 +10,7 @@ spec:
       image: gcr.io/kaniko-project/executor:debug
       imagePullPolicy: Always
       volumeMounts:
-      - name: jenkins-docker-cfg
+      - name: kaniko-secret
         mountPath: /kaniko/.docker/
       restartPolicy: Never
       resources:
@@ -21,6 +21,6 @@ spec:
           cpu: "0.5"
           memory: "500Mi"
   volumes:
-  - name: jenkins-docker-cfg
+  - name: kaniko-secret
     secret:
       name: kaniko-secret
