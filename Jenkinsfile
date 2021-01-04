@@ -12,7 +12,8 @@ pipeline {
         disableConcurrentBuilds() 
         buildDiscarder(logRotator(daysToKeepStr: '10', numToKeepStr: '5', artifactNumToKeepStr: '1'))
     }
-        
+
+    stages {
         stage('Make Image') {
             environment {
                 PATH        = "/busybox:$PATH"
@@ -28,4 +29,5 @@ pipeline {
                 }
             }
         }
+    }
 }
