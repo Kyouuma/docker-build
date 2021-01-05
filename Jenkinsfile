@@ -42,7 +42,7 @@ pipeline {
             steps {
                 container('helm') {
                     withKubeConfig([credentialsId: 'jenkins-robot', serverUrl: 'https://dev-aks-20bb10c8.hcp.francecentral.azmk8s.io/']) {
-                        sh "helm -n dev upgrade -i docker-build ./charts/docker-build/ --set image.tag=test --set ingress.hosts[0]=${BUILD_NUMBER}-${JOB_NAME%%/*}-20-74-10-207.nip.io"
+                        sh "helm -n dev upgrade -i docker-build ./charts/docker-build/ --set image.tag=test --set ingress.hosts[0]=${BUILD_NUMBER}-${JOB_BASE_NAME}-20-74-10-207.nip.io"
                         }
                 }
             }
