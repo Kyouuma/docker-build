@@ -41,7 +41,9 @@ pipeline {
             }
             steps {
                 container('helm') {
-                    sh "helm -n default upgrade --force docker-build --set image.tag=test ./charts"
+                    withKubeConfig([credentialsId: 'jenkins-robot', serverUrl: 'https://dev-aks-20bb10c8.hcp.francecentral.azmk8s.io/']) {
+                        sh "helm -n dev upgrade --force docker-build --set image.tag=master ./charts/docker-build"
+                        }
                 }
             }
         }
