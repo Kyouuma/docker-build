@@ -23,7 +23,7 @@ pipeline {
                 PATH        = "/busybox:$PATH"
                 REGISTRY    = 'acravaxia.azurecr.io' 
                 REPOSITORY  = 'docker-build'
-                IMAGE       = 'test'
+                IMAGE       = 'master'
             }
             steps {
                 container(name: 'kaniko', shell: '/busybox/sh') {
@@ -42,7 +42,7 @@ pipeline {
             steps {
                 container('helm') {
                     withKubeConfig([credentialsId: 'jenkins-robot', serverUrl: 'https://dev-aks-20bb10c8.hcp.francecentral.azmk8s.io/']) {
-                        sh "helm -n dev upgrade --force docker-build --set image.tag=master ./charts/docker-build"
+                        sh "helm -n dev upgrade -i docker-build ./charts/docker-build/ --set image.tag=test --set ingress.hosts.host=${BUILD_NUMBER}-${JOB_NAME}.20.74.10.207.nip.io"
                         }
                 }
             }
