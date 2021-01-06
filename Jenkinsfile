@@ -40,7 +40,7 @@ pipeline {
         }
         stage('Deploy To Integration') {
             when {
-                env.BRANCH == 'master'
+                expression{env.BRANCH_NAME = 'master'}
             }
             steps {
                 container('helm') {
