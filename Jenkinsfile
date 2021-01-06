@@ -51,7 +51,7 @@ pipeline {
                             --set ingress.hosts[0].paths[0].path=/
                             --set ingress.tls[0].secretName=master-56-tls 
                        '''
-//                              }
+                              }
                 }
             }
         }
