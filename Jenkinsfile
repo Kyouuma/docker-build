@@ -16,10 +16,11 @@ pipeline {
     stages {
         stage('Build Docker Image') {
             when {
+                
                 anyOf {
                 expression{env.BRANCH_NAME = 'master'}
-                expression{env.BRANCH_NAME =~ /feature/ && sh (script: "git log -1 | grep '\\[ci build\\]'", returnStatus: true).toBoolean() } 
-                expression{env.BRANCH_NAME =~ /hotfix/} 
+                expression{env.BRANCH_NAME.contains("feature") && sh (script: "git log -1 | grep '\\[ci build\\]'", returnStatus: true).toBoolean() } 
+                expression{env.BRANCH_NAME.contains("hotfix")} 
                 expression{buildingTag()} 
                 }
             }
