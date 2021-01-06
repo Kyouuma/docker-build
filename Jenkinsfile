@@ -54,9 +54,9 @@ pipeline {
                 }
             }
         }
-        stage('Deploy To Integration') {
+        stage('Deploy To Staging') {
             when {
-                branch 'master'
+                buildingTag()
             }
             steps {
                 container('helm') {
