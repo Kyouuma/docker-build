@@ -40,14 +40,14 @@ pipeline {
         }
         stage('Deploy To Integration') {
             when {
-                branch 'master'
+                env.BRANCH == 'master'
             }
             steps {
                 container('helm') {
                     withKubeConfig([credentialsId: 'jenkins-robot', serverUrl: 'https://dev-aks-20bb10c8.hcp.francecentral.azmk8s.io/']) {
                        sh '''
                            helm -n dev upgrade -i demo-int ./charts/docker-build/ \
-                            --set image.tag=latest \
+                            --set image.tag=master \
                             --set ingress.enabled=true \
                             --set ingress.hosts[0].host=demo-int-20-74-10-207.nip.io \
                             --set ingress.tls[0].hosts[0]=demo-int-20-74-10-207.nip.io \
