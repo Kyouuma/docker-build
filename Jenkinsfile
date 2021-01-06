@@ -1,8 +1,7 @@
 
 pipeline {
     environment {
-        DEPLOY = "${env.BRANCH_NAME == "master" || env.BRANCH_NAME == "develop" ? "true" : "false"}"
-        NAME = "${env.BRANCH_NAME == "master" ? "example" : "docker-build-staging"}"
+        BUILD_FEATURE = sh (script: "git log -1 | grep '\\[ci build\\]'", returnStatus: true) 
     }
     agent {
         kubernetes {
@@ -16,9 +15,16 @@ pipeline {
         disableConcurrentBuilds() 
         buildDiscarder(logRotator(daysToKeepStr: '10', numToKeepStr: '5', artifactNumToKeepStr: '1'))
     }
-
     stages {
         stage('Build Docker Image') {
+            when {
+                anyOf {
+                expression{env.BRANCH_NAME = 'master'}
+                expression{env.BRANCH_NAME =~ /feature/ $$ env.BUILD_FEATURE.toBoolean() } 
+                expression{env.BRANCH_NAME =~ /hotfix/} 
+                expression{buildingTag()} 
+                }
+            }
             environment {
                 PATH        = "/busybox:$PATH"
                 REGISTRY    = 'acravaxia.azurecr.io' 
