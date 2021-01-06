@@ -20,7 +20,7 @@ pipeline {
             when {
                 anyOf {
                 expression{env.BRANCH_NAME = 'master'}
-                expression{env.BRANCH_NAME =~ /feature/ $$ env.BUILD_FEATURE.toBoolean() } 
+                expression{env.BRANCH_NAME =~ /feature/ && env.BUILD_FEATURE.toBoolean() } 
                 expression{env.BRANCH_NAME =~ /hotfix/} 
                 expression{buildingTag()} 
                 }
