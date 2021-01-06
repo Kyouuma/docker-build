@@ -23,7 +23,7 @@ spec:
           memory: "100Mi"
         limits:
           cpu: "0.5"
-          memory: "400Mi"
+          memory: "300Mi"
     - name: helm
       image: lachlanevenson/k8s-helm:v3.1.1
       imagePullPolicy: Always
