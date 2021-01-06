@@ -16,10 +16,11 @@ pipeline {
     stages {
         stage('Build Docker Image') {
             when {
+                
                 anyOf {
                 expression{env.BRANCH_NAME = 'master'}
-                expression{env.BRANCH_NAME =~ /feature/ && sh (script: "git log -1 | grep '\\[ci build\\]'", returnStatus: true).toBoolean() } 
-                expression{env.BRANCH_NAME =~ /hotfix/} 
+                expression{env.BRANCH_NAME.contains("feature") && sh (script: "git log -1 | grep '\\[ci build\\]'", returnStatus: true).toBoolean() } 
+                expression{env.BRANCH_NAME.contains("hotfix")} 
                 expression{buildingTag()} 
                 }
             }
@@ -40,14 +41,14 @@ pipeline {
         }
         stage('Deploy To Integration') {
             when {
-                branch 'master'
+                expression{env.BRANCH_NAME = 'master'}
             }
             steps {
                 container('helm') {
                     withKubeConfig([credentialsId: 'jenkins-robot', serverUrl: 'https://dev-aks-20bb10c8.hcp.francecentral.azmk8s.io/']) {
                        sh '''
                            helm -n dev upgrade -i demo-int ./charts/docker-build/ \
-                            --set image.tag=latest \
+                            --set image.tag=master \
                             --set ingress.enabled=true \
                             --set ingress.hosts[0].host=demo-int-20-74-10-207.nip.io \
                             --set ingress.tls[0].hosts[0]=demo-int-20-74-10-207.nip.io \

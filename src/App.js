@@ -9,6 +9,7 @@ function App() {
         <p>
           Avaxia Group Demo Application
         </p>
+        <p>added JIRA-37</p>
         <a
           className="App-link"
           href="https://www.avaxiagroup.com/"
