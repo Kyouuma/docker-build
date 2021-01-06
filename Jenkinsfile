@@ -18,40 +18,59 @@ pipeline {
     }
 
     stages {
-        stage('Make Image') {
+        stage('Build Docker Image') {
             environment {
                 PATH        = "/busybox:$PATH"
                 REGISTRY    = 'acravaxia.azurecr.io' 
                 REPOSITORY  = 'docker-build'
-                IMAGE       = 'master'
             }
             steps {
                 container(name: 'kaniko', shell: '/busybox/sh') {
                     ansiColor('xterm') {
                         sh '''#!/busybox/sh
-                        /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --cache=true --destination=${REGISTRY}/${REPOSITORY}:${IMAGE}
+                        /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --cache=true --destination=${REGISTRY}/${REPOSITORY}:${BRANCH_NAME}
                         '''
                     }
                 }
             }
         }
-        stage('Kubernetes Deploy') {
+        stage('Deploy To Integration') {
             when {
-                environment name: 'DEPLOY', value: 'true'
+                branch 'master'
             }
             steps {
                 container('helm') {
                     withKubeConfig([credentialsId: 'jenkins-robot', serverUrl: 'https://dev-aks-20bb10c8.hcp.francecentral.azmk8s.io/']) {
                        sh '''
-                           helm -n dev upgrade -i docker-build ./charts/docker-build/ \
-                            --set image.tag=master \
+                           helm -n dev upgrade -i demo-int ./charts/docker-build/ \
+                            --set image.tag=latest \
                             --set ingress.enabled=true \
-                            --set ingress.hosts[0].host=masterdev-20-74-10-207.nip.io \
-                            --set ingress.tls[0].hosts[0]=masterdev-20-74-10-207.nip.io \
+                            --set ingress.hosts[0].host=demo-int-20-74-10-207.nip.io \
+                            --set ingress.tls[0].hosts[0]=demo-int-20-74-10-207.nip.io \
                             --set ingress.hosts[0].paths[0].path=/ \
-                            --set ingress.tls[0].secretName=master-56-tls 
+                            --set ingress.tls[0].secretName=demo-int-tls 
                        '''
-                              }
+                    }
+                }
+            }
+        }
+        stage('Deploy To Integration') {
+            when {
+                branch 'master'
+            }
+            steps {
+                container('helm') {
+                    withKubeConfig([credentialsId: 'jenkins-robot', serverUrl: 'https://dev-aks-20bb10c8.hcp.francecentral.azmk8s.io/']) {
+                       sh '''
+                           helm -n dev upgrade -i demo-staging ./charts/docker-build/ \
+                            --set image.tag=${BRANCH_NAME} \
+                            --set ingress.enabled=true \
+                            --set ingress.hosts[0].host=demo-staging-20-74-10-207.nip.io \
+                            --set ingress.tls[0].hosts[0]=demo-staging-20-74-10-207.nip.io \
+                            --set ingress.hosts[0].paths[0].path=/ \
+                            --set ingress.tls[0].secretName=demo-staging-tls 
+                       '''
+                    }
                 }
             }
         }
