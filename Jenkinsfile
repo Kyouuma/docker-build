@@ -42,8 +42,16 @@ pipeline {
             steps {
                 container('helm') {
                     withKubeConfig([credentialsId: 'jenkins-robot', serverUrl: 'https://dev-aks-20bb10c8.hcp.francecentral.azmk8s.io/']) {
-                        sh "helm -n dev upgrade -i docker-build ./charts/docker-build/ --set image.tag=test --set ingress.hosts[0]=${BUILD_NUMBER}-${JOB_BASE_NAME}-20-74-10-207.nip.io"
-                        }
+                       sh '''
+                           helm -n dev upgrade -i docker-build ./charts/docker-build/ \
+                            --set image.tag=master \
+                            --set ingress.enabled=true \
+                            --set ingress.hosts[0].host=masterdev-20-74-10-207.nip.io
+                            --set ingress.tls[0].hosts[0]=masterdev-20-74-10-207.nip.io
+                            --set ingress.hosts[0].paths[0].path=/
+                            --set ingress.tls[0].secretName=master-56-tls 
+                       '''
+//                              }
                 }
             }
         }
